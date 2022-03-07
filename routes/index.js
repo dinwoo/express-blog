@@ -1,10 +1,6 @@
-var express = require("express");
-var router = express.Router();
-var firebaseAdminDb = require("../connections/firebaseAdmin");
-
-firebaseAdminDb.ref("test").once("value", (snapshot) => {
-  console.log(snapshot.val());
-});
+const express = require("express");
+const router = express.Router();
+const firebaseAdminDb = require("../connections/firebaseAdmin");
 
 /* GET home page. */
 router.get("/", function (req, res, next) {
@@ -17,18 +13,6 @@ router.get("/post", function (req, res, next) {
 
 router.get("/dashboard/signup", function (req, res, next) {
   res.render("dashboard/signup", { title: "Express" });
-});
-
-router.get("/dashboard/article", function (req, res, next) {
-  res.render("dashboard/article", { title: "Express" });
-});
-
-router.get("/dashboard/archives", function (req, res, next) {
-  res.render("dashboard/archives", { title: "Express" });
-});
-
-router.get("/dashboard/categories", function (req, res, next) {
-  res.render("dashboard/categories", { title: "Express" });
 });
 
 module.exports = router;

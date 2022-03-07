@@ -2,6 +2,13 @@
 
 <div class="row justify-content-center">
   <div class="col-md-6">
+    <% if(hasInfo){ %>
+      <% for(var key in message){ %> 
+        <div class="alert alert-warning">
+          <%- message[key] %> 
+        </div>
+      <% } %>  
+    <% } %>  
     <table class="table">
       <thead>
         <tr>
@@ -11,27 +18,29 @@
         </tr>
       </thead>
       <tbody>
+        <% for(var key in categories){ %>
         <tr>
-          <td class="align-middle">心得</td>
+          <td class="align-middle"><%- categories[key].name %></td>
           <td>
             <input
               type="text"
               class="form-control form-control-sm"
-              value="mind"
+              value="<%- categories[key].path %>"
             />
           </td>
           <td class="align-middle">
-            <form method="POST">
+            <form method="POST" action="/dashboard/categories/delete/<%- key %>">
               <button type="submit" class="btn btn-outline-danger btn-sm">
                 刪除
               </button>
             </form>
           </td>
         </tr>
+        <% } %>
       </tbody>
     </table>
 
-    <form method="POST">
+    <form method="POST" action="/dashboard/categories/create">
       <table class="table">
         <tr>
           <td class="align-middle">新增</td>
