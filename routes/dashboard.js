@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const firebaseAdminDb = require("../connections/firebaseAdmin");
+const stringtags = require("striptags");
+const moment = require("moment");
 
 const categoriesRef = firebaseAdminDb.ref("/categories");
 const articlesRef = firebaseAdminDb.ref("/articles");
@@ -46,8 +48,51 @@ router.post("/article/create", function (req, res) {
   });
 });
 
+router.post("/article/update/:id", function (req, res) {
+  const data = req.body;
+  const id = req.params.id;
+  console.log(data);
+  articlesRef
+    .child(id)
+    .update(data)
+    .then(() => {
+      res.redirect(`/dashboard/article/${id}`);
+    });
+});
+
 router.get("/archives", function (req, res, next) {
-  res.render("dashboard/archives", { title: "Express" });
+  const status = req.query.status || "public";
+  let categories = {};
+  categoriesRef
+    .once("value")
+    .then((snapshot) => {
+      categories = snapshot.val();
+      return articlesRef.orderByChild("update_time").once("value");
+    })
+    .then((snapshot) => {
+      let articles = [];
+      snapshot.forEach((snapshotChild) => {
+        if (snapshotChild.val().status == status) {
+          articles.push(snapshotChild.val());
+        }
+      });
+      articles.reverse();
+      res.render("dashboard/archives", {
+        title: "Express",
+        categories,
+        articles,
+        stringtags,
+        moment,
+        status,
+      });
+    });
+});
+
+router.post("/article/delete/:id", function (req, res) {
+  const id = req.params.id;
+  articlesRef.child(id).remove();
+  res.send("文章已刪除");
+  res.end();
 });
 
 router.get("/categories", function (req, res, next) {
