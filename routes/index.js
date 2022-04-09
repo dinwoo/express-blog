@@ -3,6 +3,7 @@ const router = express.Router();
 const firebaseAdminDb = require("../connections/firebaseAdmin");
 const stringtags = require("striptags");
 const moment = require("moment");
+const converPagination = require("../modules/convertPagination");
 
 const categoriesRef = firebaseAdminDb.ref("/categories");
 const articlesRef = firebaseAdminDb.ref("/articles");
@@ -26,28 +27,15 @@ router.get("/", function (req, res, next) {
       });
       articles.reverse();
 
-      const totalItems = articles.length;
-      const perPage = 3;
-      const totalPages = Math.ceil(totalItems / perPage);
-      const minItem = (currentPage - 1) * perPage + 1;
-      const maxItem =
-        currentPage * perPage < totalItems ? currentPage * perPage : totalItems;
-
-      const page = {
-        totalPages,
-        currentPage,
-        hasPre: minItem > 1,
-        hasNext: currentPage < totalPages,
-      };
-      articles = articles.slice(minItem - 1, maxItem);
+      const data = converPagination(articles, currentPage);
 
       res.render("index", {
         title: "Express",
         categories,
-        articles,
+        articles: data.articles,
         stringtags,
         moment,
-        page,
+        page: data.page,
       });
     });
 });
@@ -63,7 +51,11 @@ router.get("/post/:id", function (req, res, next) {
     })
     .then((snapshot) => {
       const article = snapshot.val();
-      console.log(article);
+      if (!article) {
+        return res.render("error", {
+          title: "找不到該文章",
+        });
+      }
       res.render("post", {
         title: "Express",
         categories,

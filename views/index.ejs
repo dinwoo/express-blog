@@ -27,18 +27,4 @@
   </div>
 </div>
 
-<nav class="my-5" aria-label="Page navigation example">
-  <ul class="pagination justify-content-center">
-  <li class="page-item <% if(!page.hasPre){ %>disabled<% } %> ">
-      <a class="page-link" href="/?page=<%- page.currentPage-1 %>" tabindex="-1">Previous</a>
-    </li>
-    <% for(let i=0;i<page.totalPages;i++){ %> 
-    <li class="page-item <% if(page.currentPage == i+1){ %>active<% } %> ">
-      <a class="page-link" href="/?page=<%- i+1 %> "> <%- i+1 %> </a>
-    </li>
-    <% } %> 
-    <li class="page-item <% if(!page.hasNext){ %>disabled<% } %>">
-      <a class="page-link" href="/?page=<%- page.currentPage+1 %>">Next</a>
-    </li>
-  </ul>
-</nav>
+<%- include('../partials/pagination.ejs') %>
